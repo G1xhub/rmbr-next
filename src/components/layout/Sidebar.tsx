@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import type { Page } from "@/types";
 
 export function Sidebar() {
   const {
@@ -106,7 +107,7 @@ export function Sidebar() {
 }
 
 interface PageItemProps {
-  page: { id: string; title: string; icon?: string; children: string[] };
+  page: Page;
   depth: number;
   isActive: boolean;
   onSelect: () => void;
@@ -123,7 +124,7 @@ function PageItem({
   onAddChild,
 }: PageItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { pages } = useWorkspaceStore();
+  const { pages, activePage, setActivePage, deletePage, createPage } = useWorkspaceStore();
   const childPages = page.children.map((id) => pages[id]).filter(Boolean);
   const hasChildren = childPages.length > 0;
 
@@ -139,7 +140,7 @@ function PageItem({
       >
         {/* Expand/Collapse */}
         <button
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             setIsExpanded(!isExpanded);
           }}
@@ -166,7 +167,7 @@ function PageItem({
         {/* Actions */}
         <div className="hidden group-hover:flex items-center gap-0.5">
           <button
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               onAddChild();
             }}
@@ -175,7 +176,7 @@ function PageItem({
             <Plus className="w-3.5 h-3.5 text-gray-400" />
           </button>
           <button
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               onDelete();
             }}
@@ -194,10 +195,10 @@ function PageItem({
               key={child.id}
               page={child}
               depth={depth + 1}
-              isActive={false}
-              onSelect={() => {}}
-              onDelete={() => {}}
-              onAddChild={() => {}}
+              isActive={activePage === child.id}
+              onSelect={() => setActivePage(child.id)}
+              onDelete={() => deletePage(child.id)}
+              onAddChild={() => createPage(child.id)}
             />
           ))}
         </div>

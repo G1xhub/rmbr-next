@@ -23,6 +23,7 @@ interface WorkspaceState {
   createBoard: (pageId: string) => string;
   addColumn: (boardId: string, title: string) => void;
   moveCard: (cardId: string, fromColumnId: string, toColumnId: string, newIndex: number) => void;
+  reorderCards: (columnId: string, cardIds: string[]) => void;
   
   // Card Actions
   createCard: (boardId: string, columnId: string, title: string) => string;
@@ -207,8 +208,36 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             },
             cards: {
               ...state.cards,
-              [cardId]: { ...card, columnId: toColumnId },
+              [cardId]: { ...card, columnId: toColumnId, updatedAt: new Date() },
             },
+          };
+        });
+      },
+
+      // Add reorder cards within same column
+      reorderCards: (columnId: string, cardIds: string[]) => {
+        set((state) => {
+          const column = Object.values(state.boards)
+            .flatMap(board => board.columns)
+            .find(col => col.id === columnId);
+          
+          if (!column) return state;
+
+          const board = Object.values(state.boards).find(b => 
+            b.columns.some(c => c.id === columnId)
+          );
+
+          if (!board) return state;
+
+          const newColumns = board.columns.map(col => 
+            col.id === columnId ? { ...col, cardIds } : col
+          );
+
+          return {
+            boards: {
+              ...state.boards,
+              [board.id]: { ...board, columns: newColumns }
+            }
           };
         });
       },

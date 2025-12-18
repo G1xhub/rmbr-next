@@ -30,7 +30,7 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ board }: KanbanBoardProps) {
-  const { cards, moveCard, createCard, addColumn } = useWorkspaceStore();
+  const { cards, moveCard, createCard, addColumn, reorderCards } = useWorkspaceStore();
   const [activeCard, setActiveCard] = useState<Card | null>(null);
 
   const sensors = useSensors(
@@ -88,7 +88,10 @@ export function KanbanBoard({ board }: KanbanBoardProps) {
         const oldIndex = column.cardIds.indexOf(activeCardId);
         const newIndex = column.cardIds.indexOf(overCard.id);
         if (oldIndex !== newIndex) {
-          // Handle reordering - we'd need to add this to the store
+          const newCardIds = [...column.cardIds];
+          newCardIds.splice(oldIndex, 1);
+          newCardIds.splice(newIndex, 0, activeCardId);
+          reorderCards(column.id, newCardIds);
         }
       }
     }

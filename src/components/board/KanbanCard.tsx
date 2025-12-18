@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Card } from "@/types";
 import { cn } from "@/lib/utils";
 import { GripVertical } from "lucide-react";
+import { CardModal } from "./CardModal";
 
 interface KanbanCardProps {
   card: Card;
@@ -12,6 +14,7 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ card, isDragging }: KanbanCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const {
     attributes,
     listeners,
@@ -27,21 +30,24 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "group bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer",
-        (isDragging || isSortableDragging) && "opacity-50 shadow-lg rotate-2",
-        isDragging && "shadow-xl"
-      )}
-    >
-      <div className="flex items-start gap-2 p-3">
+    <>
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={cn(
+          "group bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer",
+          (isDragging || isSortableDragging) && "opacity-50 shadow-lg rotate-2",
+          isDragging && "shadow-xl"
+        )}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <div className="flex items-start gap-2 p-3">
         {/* Drag Handle */}
         <button
           {...attributes}
           {...listeners}
           className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing mt-0.5"
+          onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="w-4 h-4 text-gray-400" />
         </button>
@@ -66,7 +72,14 @@ export function KanbanCard({ card, isDragging }: KanbanCardProps) {
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+
+      <CardModal
+        card={card}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 }
