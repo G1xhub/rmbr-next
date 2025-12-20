@@ -1,4 +1,4 @@
-# rmbr - Your Notion-like Workspace
+# rmbr - remeber it
 
 A modern note-taking and project management app built with Next.js.
 
