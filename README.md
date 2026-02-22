@@ -1,4 +1,4 @@
-# rmbr - remeber it
+# rmbr - remember it
 
 A modern note-taking and project management app built with Next.js.
 
